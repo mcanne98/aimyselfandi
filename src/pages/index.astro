@@ -3,48 +3,855 @@ import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+import { getCollection } from 'astro:content';
+import FormattedDate from '../components/FormattedDate.astro';
+
+const allPosts = (await getCollection('blog')).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+const featured = allPosts[0];
+const recent = allPosts.slice(1, 4);
 ---
 
 <!doctype html>
 <html lang="en">
 	<head>
 		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+		<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet" />
+		<style>
+			:root {
+				--navy: #0F172A;
+				--navy-mid: #1E293B;
+				--navy-light: #334155;
+				--teal: #14B8A6;
+				--teal-dark: #0F766E;
+				--gold: #F59E0B;
+				--off-white: #F8FAFC;
+				--text-muted: #94A3B8;
+				--text-mid: #CBD5E1;
+				--border: rgba(255, 255, 255, 0.08);
+			}
+
+			body {
+				font-family: 'DM Sans', sans-serif;
+				background: var(--navy);
+				color: #ffffff;
+				margin: 0;
+				padding: 0;
+				background-image: none;
+			}
+
+			/* ── HERO ── */
+			.hero {
+				padding: 100px 40px 80px;
+				max-width: 900px;
+				margin: 0 auto;
+			}
+			.eyebrow {
+				display: inline-flex;
+				align-items: center;
+				gap: 8px;
+				font-size: 0.7rem;
+				font-weight: 600;
+				letter-spacing: 0.12em;
+				text-transform: uppercase;
+				color: var(--teal);
+				margin-bottom: 1.75rem;
+			}
+			.eyebrow::before {
+				content: '';
+				display: block;
+				width: 24px;
+				height: 2px;
+				background: var(--teal);
+			}
+			.hero h1 {
+				font-family: 'DM Serif Display', serif;
+				font-size: clamp(2.4rem, 5vw, 3.75rem);
+				line-height: 1.1;
+				letter-spacing: -0.02em;
+				color: #ffffff;
+				margin: 0 0 1.5rem 0;
+				max-width: 760px;
+			}
+			.hero h1 em {
+				font-style: italic;
+				color: var(--teal);
+			}
+			.hero-sub {
+				font-size: 1.125rem;
+				color: var(--text-mid);
+				max-width: 560px;
+				line-height: 1.75;
+				margin-bottom: 2.5rem;
+				font-weight: 300;
+			}
+			.hero-actions {
+				display: flex;
+				gap: 1rem;
+				flex-wrap: wrap;
+				align-items: center;
+			}
+			.btn-primary {
+				background: var(--teal);
+				color: var(--navy);
+				font-family: 'DM Sans', sans-serif;
+				font-weight: 600;
+				font-size: 0.9rem;
+				padding: 0.75rem 1.75rem;
+				border-radius: 8px;
+				text-decoration: none;
+				display: inline-flex;
+				align-items: center;
+				gap: 6px;
+				transition: background 0.2s, transform 0.15s;
+			}
+			.btn-primary:hover {
+				background: var(--teal-dark);
+				color: #ffffff;
+				transform: translateY(-1px);
+			}
+			.btn-ghost {
+				color: var(--text-mid);
+				font-size: 0.9rem;
+				font-weight: 400;
+				text-decoration: none;
+				display: inline-flex;
+				align-items: center;
+				gap: 6px;
+				transition: color 0.2s;
+			}
+			.btn-ghost:hover { color: #ffffff; }
+			.hero-meta {
+				margin-top: 4rem;
+				padding-top: 2rem;
+				border-top: 1px solid var(--border);
+				display: flex;
+				gap: 3rem;
+				flex-wrap: wrap;
+			}
+			.hero-meta-item {
+				display: flex;
+				flex-direction: column;
+				gap: 3px;
+			}
+			.meta-label {
+				font-size: 0.65rem;
+				text-transform: uppercase;
+				letter-spacing: 0.1em;
+				color: var(--text-muted);
+				font-weight: 600;
+			}
+			.meta-value {
+				font-size: 0.9rem;
+				color: var(--text-mid);
+				font-weight: 300;
+			}
+
+			/* ── DIVIDER ── */
+			.divider {
+				height: 1px;
+				background: var(--border);
+				max-width: 860px;
+				margin: 0 auto;
+			}
+
+			/* ── WHY SECTION ── */
+			.why-section {
+				padding: 80px 40px;
+				max-width: 860px;
+				margin: 0 auto;
+				display: grid;
+				grid-template-columns: 200px 1fr;
+				gap: 4rem;
+				align-items: start;
+			}
+			.why-avatar {
+				width: 80px;
+				height: 80px;
+				border-radius: 50%;
+				background: linear-gradient(135deg, var(--teal-dark), var(--navy-light));
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				font-family: 'DM Serif Display', serif;
+				font-size: 1.75rem;
+				color: var(--teal);
+				margin-bottom: 1.25rem;
+				border: 2px solid rgba(20, 184, 166, 0.3);
+			}
+			.why-name {
+				font-weight: 600;
+				font-size: 1rem;
+				color: #ffffff;
+				margin-bottom: 0.35rem;
+			}
+			.why-title {
+				font-size: 0.8rem;
+				color: var(--text-muted);
+				line-height: 1.7;
+				font-weight: 300;
+			}
+			.section-eyebrow {
+				font-size: 0.7rem;
+				font-weight: 600;
+				letter-spacing: 0.12em;
+				text-transform: uppercase;
+				color: var(--teal);
+				margin-bottom: 1.25rem;
+				display: flex;
+				align-items: center;
+				gap: 8px;
+			}
+			.section-eyebrow::before {
+				content: '';
+				display: block;
+				width: 16px;
+				height: 2px;
+				background: var(--teal);
+			}
+			.why-right h2 {
+				font-family: 'DM Serif Display', serif;
+				font-size: 1.9rem;
+				line-height: 1.2;
+				letter-spacing: -0.02em;
+				color: #ffffff;
+				margin: 0 0 1.5rem 0;
+			}
+			.why-right p {
+				color: var(--text-mid);
+				font-size: 1rem;
+				line-height: 1.8;
+				margin-bottom: 1rem;
+				font-weight: 300;
+			}
+			.why-right p strong {
+				color: #ffffff;
+				font-weight: 500;
+			}
+			.credential-pills {
+				margin-top: 2rem;
+				display: flex;
+				flex-wrap: wrap;
+				gap: 0.5rem;
+			}
+			.pill {
+				font-size: 0.75rem;
+				color: var(--teal);
+				background: rgba(20, 184, 166, 0.08);
+				border: 1px solid rgba(20, 184, 166, 0.2);
+				padding: 0.3rem 0.85rem;
+				border-radius: 100px;
+				font-weight: 500;
+			}
+
+			/* ── FRAMEWORK ── */
+			.framework-section {
+				background: var(--navy-mid);
+				padding: 80px 40px;
+				border-top: 1px solid var(--border);
+				border-bottom: 1px solid var(--border);
+			}
+			.framework-inner {
+				max-width: 860px;
+				margin: 0 auto;
+			}
+			.framework-header {
+				text-align: center;
+				margin-bottom: 3.5rem;
+			}
+			.framework-header .section-eyebrow {
+				justify-content: center;
+			}
+			.framework-header h2 {
+				font-family: 'DM Serif Display', serif;
+				font-size: 2rem;
+				letter-spacing: -0.02em;
+				color: #ffffff;
+				margin: 0.5rem 0 0.75rem 0;
+			}
+			.framework-header p {
+				color: var(--text-muted);
+				font-size: 0.95rem;
+				max-width: 480px;
+				margin: 0 auto;
+				font-weight: 300;
+			}
+			.pillars {
+				display: grid;
+				grid-template-columns: 1fr 1fr 1fr;
+				gap: 1.5px;
+				background: var(--border);
+				border-radius: 12px;
+				overflow: hidden;
+			}
+			.pillar {
+				background: var(--navy);
+				padding: 2.5rem 2rem;
+			}
+			.pillar-number {
+				font-family: 'DM Serif Display', serif;
+				font-size: 3rem;
+				color: rgba(20, 184, 166, 0.1);
+				line-height: 1;
+				margin-bottom: 1rem;
+				display: block;
+			}
+			.pillar-bar {
+				width: 32px;
+				height: 2px;
+				margin-bottom: 1.25rem;
+				background: var(--teal);
+			}
+			.pillar:nth-child(2) .pillar-bar { background: var(--gold); }
+			.pillar h3 {
+				font-family: 'DM Serif Display', serif;
+				font-size: 1.4rem;
+				color: #ffffff;
+				margin: 0 0 0.75rem 0;
+				letter-spacing: -0.01em;
+			}
+			.pillar:nth-child(2) h3 { color: var(--gold); }
+			.pillar p {
+				font-size: 0.875rem;
+				color: var(--text-muted);
+				line-height: 1.7;
+				margin: 0 0 1.25rem 0;
+				font-weight: 300;
+			}
+			.pillar-qs {
+				display: flex;
+				flex-direction: column;
+				gap: 0.5rem;
+			}
+			.pillar-q {
+				font-size: 0.775rem;
+				color: var(--text-muted);
+				display: flex;
+				align-items: flex-start;
+				gap: 6px;
+				line-height: 1.5;
+			}
+			.pillar-q::before {
+				content: '→';
+				color: var(--teal);
+				flex-shrink: 0;
+			}
+			.pillar:nth-child(2) .pillar-q::before { color: var(--gold); }
+
+			/* ── SERIES ── */
+			.series-section {
+				padding: 80px 40px;
+				max-width: 860px;
+				margin: 0 auto;
+			}
+			.section-header {
+				margin-bottom: 2.5rem;
+			}
+			.section-header h2 {
+				font-family: 'DM Serif Display', serif;
+				font-size: 2rem;
+				letter-spacing: -0.02em;
+				color: #ffffff;
+				margin: 0.5rem 0 0.5rem 0;
+			}
+			.section-header p {
+				color: var(--text-muted);
+				font-size: 0.9rem;
+				font-weight: 300;
+				margin: 0;
+			}
+			.series-grid {
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				gap: 1.5px;
+				background: var(--border);
+				border-radius: 12px;
+				overflow: hidden;
+			}
+			.series-card {
+				background: var(--navy-mid);
+				padding: 2rem;
+				transition: background 0.2s;
+				position: relative;
+				overflow: hidden;
+				text-decoration: none;
+				display: block;
+			}
+			.series-card::after {
+				content: '→';
+				position: absolute;
+				bottom: 1.5rem;
+				right: 1.5rem;
+				color: var(--text-muted);
+				transition: transform 0.2s, color 0.2s;
+			}
+			.series-card:hover { background: var(--navy-light); }
+			.series-card:hover::after { transform: translateX(4px); color: var(--teal); }
+			.series-tag {
+				font-size: 0.65rem;
+				font-weight: 600;
+				letter-spacing: 0.1em;
+				text-transform: uppercase;
+				color: var(--teal);
+				margin-bottom: 0.75rem;
+				display: block;
+			}
+			.series-card:nth-child(even) .series-tag { color: var(--gold); }
+			.series-card h3 {
+				font-family: 'DM Serif Display', serif;
+				font-size: 1.1rem;
+				color: #ffffff;
+				margin: 0 0 0.6rem 0;
+				letter-spacing: -0.01em;
+			}
+			.series-card p {
+				font-size: 0.825rem;
+				color: var(--text-muted);
+				line-height: 1.6;
+				padding-right: 1.5rem;
+				font-weight: 300;
+				margin: 0;
+			}
+
+			/* ── LATEST ── */
+			.latest-section {
+				background: var(--navy-mid);
+				padding: 80px 40px;
+				border-top: 1px solid var(--border);
+			}
+			.latest-inner {
+				max-width: 860px;
+				margin: 0 auto;
+			}
+			.latest-header {
+				display: flex;
+				align-items: flex-end;
+				justify-content: space-between;
+				margin-bottom: 2.5rem;
+			}
+			.latest-header h2 {
+				font-family: 'DM Serif Display', serif;
+				font-size: 2rem;
+				letter-spacing: -0.02em;
+				color: #ffffff;
+				margin: 0.5rem 0 0 0;
+			}
+			.view-all {
+				font-size: 0.825rem;
+				color: var(--teal);
+				text-decoration: none;
+				display: flex;
+				align-items: center;
+				gap: 4px;
+				transition: gap 0.2s;
+				white-space: nowrap;
+			}
+			.view-all:hover { gap: 8px; }
+
+			/* Featured article */
+			.featured-card {
+				background: var(--navy);
+				border: 1px solid var(--border);
+				border-radius: 12px;
+				overflow: hidden;
+				margin-bottom: 1.5rem;
+				display: grid;
+				grid-template-columns: 1fr 380px;
+				transition: border-color 0.2s;
+				text-decoration: none;
+			}
+			.featured-card:hover { border-color: rgba(20, 184, 166, 0.3); }
+			.featured-content {
+				padding: 2.5rem;
+				display: flex;
+				flex-direction: column;
+				justify-content: space-between;
+			}
+			.featured-badge {
+				display: inline-block;
+				font-size: 0.65rem;
+				font-weight: 600;
+				letter-spacing: 0.1em;
+				text-transform: uppercase;
+				color: var(--gold);
+				background: rgba(245, 158, 11, 0.1);
+				border: 1px solid rgba(245, 158, 11, 0.2);
+				padding: 0.25rem 0.75rem;
+				border-radius: 100px;
+				margin-bottom: 1.25rem;
+				align-self: flex-start;
+			}
+			.featured-content h3 {
+				font-family: 'DM Serif Display', serif;
+				font-size: 1.6rem;
+				color: #ffffff;
+				letter-spacing: -0.02em;
+				margin: 0 0 0.75rem 0;
+				line-height: 1.2;
+			}
+			.featured-content p {
+				font-size: 0.9rem;
+				color: var(--text-muted);
+				line-height: 1.75;
+				font-weight: 300;
+				margin: 0 0 1.5rem 0;
+			}
+			.article-meta {
+				display: flex;
+				align-items: center;
+				gap: 0.75rem;
+				font-size: 0.775rem;
+				color: var(--text-muted);
+			}
+			.meta-sep { opacity: 0.4; }
+			.featured-image {
+				position: relative;
+				overflow: hidden;
+			}
+			.featured-image img {
+				width: 100%;
+				height: 100%;
+				object-fit: cover;
+				border-radius: 0;
+				display: block;
+			}
+
+			/* Article grid */
+			.articles-grid {
+				display: grid;
+				grid-template-columns: 1fr 1fr 1fr;
+				gap: 1.5px;
+				background: var(--border);
+				border-radius: 12px;
+				overflow: hidden;
+				margin-bottom: 2rem;
+			}
+			.article-card {
+				background: var(--navy);
+				padding: 1.5rem;
+				transition: background 0.2s;
+				text-decoration: none;
+				display: block;
+			}
+			.article-card:hover { background: var(--navy-light); }
+			.article-tag {
+				font-size: 0.65rem;
+				font-weight: 600;
+				letter-spacing: 0.1em;
+				text-transform: uppercase;
+				color: var(--teal);
+				margin-bottom: 0.6rem;
+				display: block;
+			}
+			.article-card h4 {
+				font-family: 'DM Serif Display', serif;
+				font-size: 1rem;
+				color: #ffffff;
+				line-height: 1.3;
+				margin: 0 0 0.5rem 0;
+				letter-spacing: -0.01em;
+			}
+			.article-date {
+				font-size: 0.75rem;
+				color: var(--text-muted);
+			}
+
+			/* Inline subscribe */
+			.subscribe-inline {
+				background: var(--navy);
+				border: 1px solid rgba(20, 184, 166, 0.2);
+				border-radius: 12px;
+				padding: 2rem 2.5rem;
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 2rem;
+			}
+			.subscribe-text h4 {
+				font-family: 'DM Serif Display', serif;
+				font-size: 1.2rem;
+				color: #ffffff;
+				margin: 0 0 0.35rem 0;
+			}
+			.subscribe-text p {
+				font-size: 0.85rem;
+				color: var(--text-muted);
+				font-weight: 300;
+				margin: 0;
+			}
+			.subscribe-form {
+				display: flex;
+				gap: 0.75rem;
+				flex-shrink: 0;
+			}
+			.subscribe-form input {
+				background: var(--navy-mid);
+				border: 1px solid var(--border);
+				color: #ffffff;
+				padding: 0.65rem 1rem;
+				border-radius: 8px;
+				font-size: 0.875rem;
+				font-family: 'DM Sans', sans-serif;
+				outline: none;
+				width: 220px;
+				transition: border-color 0.2s;
+			}
+			.subscribe-form input::placeholder { color: var(--text-muted); }
+			.subscribe-form input:focus { border-color: var(--teal); }
+			.subscribe-form button {
+				background: var(--teal);
+				color: var(--navy);
+				border: none;
+				font-family: 'DM Sans', sans-serif;
+				font-weight: 600;
+				font-size: 0.875rem;
+				padding: 0.65rem 1.25rem;
+				border-radius: 8px;
+				cursor: pointer;
+				white-space: nowrap;
+				transition: background 0.2s;
+			}
+			.subscribe-form button:hover {
+				background: var(--teal-dark);
+				color: #ffffff;
+			}
+
+			/* ── RESPONSIVE ── */
+			@media (max-width: 720px) {
+				.hero { padding: 60px 1.5rem 60px; }
+				.why-section { grid-template-columns: 1fr; gap: 2rem; padding: 60px 1.5rem; }
+				.framework-section { padding: 60px 1.5rem; }
+				.pillars { grid-template-columns: 1fr; }
+				.series-section { padding: 60px 1.5rem; }
+				.series-grid { grid-template-columns: 1fr; }
+				.latest-section { padding: 60px 1.5rem; }
+				.featured-card { grid-template-columns: 1fr; }
+				.featured-image { height: 220px; }
+				.articles-grid { grid-template-columns: 1fr; }
+				.subscribe-inline { flex-direction: column; align-items: flex-start; }
+				.subscribe-form { flex-direction: column; width: 100%; }
+				.subscribe-form input { width: 100%; }
+				.hero-meta { gap: 1.5rem; }
+			}
+		</style>
 	</head>
+
 	<body>
 		<Header />
-		<main>
-			<h1>🧑‍🚀 Hello, Astronaut!</h1>
-			<p>
-				Welcome to the official <a href="https://astro.build/">Astro</a> blog starter template. This
-				template serves as a lightweight, minimally-styled starting point for anyone looking to build
-				a personal website, blog, or portfolio with Astro.
-			</p>
-			<p>
-				This template comes with a few integrations already configured in your
-				<code>astro.config.mjs</code> file. You can customize your setup with
-				<a href="https://astro.build/integrations">Astro Integrations</a> to add tools like Tailwind,
-				React, or Vue to your project.
-			</p>
-			<p>Here are a few ideas on how to get started with the template:</p>
-			<ul>
-				<li>Edit this page in <code>src/pages/index.astro</code></li>
-				<li>Edit the site header items in <code>src/components/Header.astro</code></li>
-				<li>Add your name to the footer in <code>src/components/Footer.astro</code></li>
-				<li>Check out the included blog posts in <code>src/content/blog/</code></li>
-				<li>Customize the blog post page layout in <code>src/layouts/BlogPost.astro</code></li>
-			</ul>
-			<p>
-				Have fun! If you get stuck, remember to <a href="https://docs.astro.build/"
-					>read the docs
-				</a> or <a href="https://astro.build/chat">join us on Discord</a> to ask questions.
-			</p>
-			<p>
-				Looking for a blog template with a bit more personality? Check out <a
-					href="https://github.com/Charca/astro-blog-template"
-					>astro-blog-template
-				</a> by <a href="https://twitter.com/Charca">Maxi Ferreira</a>.
-			</p>
-		</main>
+
+		<!-- HERO -->
+		<section class="hero">
+			<div class="eyebrow">A Newsletter by Cedric Anne</div>
+			<h1>Leading Through<br>the <em>AI Shift</em></h1>
+			<p class="hero-sub">Insights on AI adoption, leadership, and organizational transformation — from the front lines of healthcare technology.</p>
+			<div class="hero-actions">
+				{featured && (
+					<a href={`/blog/${featured.id}/`} class="btn-primary">Read the Latest →</a>
+				)}
+				<a href="/blog" class="btn-ghost">Explore All Articles →</a>
+			</div>
+			<div class="hero-meta">
+				<div class="hero-meta-item">
+					<span class="meta-label">Published</span>
+					<span class="meta-value">Weekly</span>
+				</div>
+				<div class="hero-meta-item">
+					<span class="meta-label">Focus</span>
+					<span class="meta-value">AI Leadership & Transformation</span>
+				</div>
+				<div class="hero-meta-item">
+					<span class="meta-label">Industry</span>
+					<span class="meta-value">Healthcare Technology</span>
+				</div>
+			</div>
+		</section>
+
+		<div class="divider"></div>
+
+		<!-- WHY THIS EXISTS -->
+		<section class="why-section">
+			<div class="why-left">
+				<div class="why-avatar">CA</div>
+				<div class="why-name">Cedric Anne</div>
+				<div class="why-title">
+					VP, Technical Services<br>
+					PointClickCare<br><br>
+					Fellow, American College<br>of Health Data Management<br><br>
+					Vice Chair, AI Community<br>of Practice
+				</div>
+			</div>
+			<div class="why-right">
+				<div class="section-eyebrow">Why I Write</div>
+				<h2>The real challenge isn't the technology.</h2>
+				<p>AI is changing how we work faster than any technology shift I have experienced. Most discussions focus on tools, models, and features.</p>
+				<p><strong>I believe the harder problem is human.</strong> How do people, teams, and organizations rethink how work actually gets done when intelligence becomes abundant?</p>
+				<p>This newsletter explores what it means to lead, adapt, and build in an AI-first world — with specific focus on healthcare technology, where the stakes are high and the transformation is real.</p>
+				<div class="credential-pills">
+					<span class="pill">AI Strategy</span>
+					<span class="pill">Agentic AI</span>
+					<span class="pill">Healthcare Technology</span>
+					<span class="pill">Change Management</span>
+					<span class="pill">Leadership</span>
+					<span class="pill">Knowledge Protocol Engineering</span>
+				</div>
+			</div>
+		</section>
+
+		<!-- FRAMEWORK -->
+		<section class="framework-section">
+			<div class="framework-inner">
+				<div class="framework-header">
+					<div class="section-eyebrow">The AI-First Framework</div>
+					<h2>Three questions every leader must answer</h2>
+					<p>The framework I use to evaluate every AI initiative, strategy, and organizational change.</p>
+				</div>
+				<div class="pillars">
+					<div class="pillar">
+						<span class="pillar-number">01</span>
+						<div class="pillar-bar"></div>
+						<h3>People</h3>
+						<p>How humans adapt when intelligence becomes a collaborator, not just a tool.</p>
+						<div class="pillar-qs">
+							<span class="pillar-q">What new habits must form?</span>
+							<span class="pillar-q">What work must be unlearned?</span>
+							<span class="pillar-q">How do roles get rebuilt?</span>
+						</div>
+					</div>
+					<div class="pillar">
+						<span class="pillar-number">02</span>
+						<div class="pillar-bar"></div>
+						<h3>Process</h3>
+						<p>How workflows change when designed with AI from day one, not retrofitted after the fact.</p>
+						<div class="pillar-qs">
+							<span class="pillar-q">What gets automated?</span>
+							<span class="pillar-q">What gets augmented?</span>
+							<span class="pillar-q">What gets reimagined entirely?</span>
+						</div>
+					</div>
+					<div class="pillar">
+						<span class="pillar-number">03</span>
+						<div class="pillar-bar"></div>
+						<h3>Product</h3>
+						<p>How value delivery changes when organizations move from owning software to owning workflows.</p>
+						<div class="pillar-qs">
+							<span class="pillar-q">What is the new value proposition?</span>
+							<span class="pillar-q">What gets eliminated?</span>
+							<span class="pillar-q">Who wins the workflow?</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- SERIES -->
+		<section class="series-section">
+			<div class="section-header">
+				<div class="section-eyebrow">Content Series</div>
+				<h2>What you will find here</h2>
+				<p>Six ongoing series, each exploring a different dimension of the AI-first shift.</p>
+			</div>
+			<div class="series-grid">
+				<a href="/blog" class="series-card">
+					<span class="series-tag">Series 01</span>
+					<h3>AI-First Mindset</h3>
+					<p>How individuals build new habits, unlearn old work, and develop an AI-native way of thinking.</p>
+				</a>
+				<a href="/blog" class="series-card">
+					<span class="series-tag">Series 02</span>
+					<h3>AI-First Teams</h3>
+					<p>How organizations create cultures where AI adoption is built in, not bolted on.</p>
+				</a>
+				<a href="/blog" class="series-card">
+					<span class="series-tag">Series 03</span>
+					<h3>Agentic AI</h3>
+					<p>The future of intelligent workflows, digital teammates, and autonomous execution.</p>
+				</a>
+				<a href="/blog" class="series-card">
+					<span class="series-tag">Series 04</span>
+					<h3>Leadership in the AI Era</h3>
+					<p>What changes when judgment, not information, becomes the scarce resource.</p>
+				</a>
+				<a href="/blog" class="series-card">
+					<span class="series-tag">Series 05</span>
+					<h3>Responsible AI</h3>
+					<p>Building trust, governance, and accountability into every AI initiative from day one.</p>
+				</a>
+				<a href="/blog" class="series-card">
+					<span class="series-tag">Series 06</span>
+					<h3>Healthcare Transformation</h3>
+					<p>Applying AI-first thinking to improve care delivery, clinical workflows, and operations.</p>
+				</a>
+			</div>
+		</section>
+
+		<!-- LATEST ARTICLES -->
+		<section class="latest-section">
+			<div class="latest-inner">
+				<div class="latest-header">
+					<div>
+						<div class="section-eyebrow">Latest</div>
+						<h2>Recent Articles</h2>
+					</div>
+					<a href="/blog" class="view-all">View all articles →</a>
+				</div>
+
+				{featured && (
+					<a href={`/blog/${featured.id}/`} class="featured-card">
+						<div class="featured-content">
+							<div>
+								<span class="featured-badge">Latest Issue</span>
+								<h3>{featured.data.title}</h3>
+								<p>{featured.data.description}</p>
+							</div>
+							<div class="article-meta">
+								<FormattedDate date={featured.data.pubDate} />
+								{featured.data.series && (
+									<>
+										<span class="meta-sep">·</span>
+										<span>{featured.data.series}</span>
+									</>
+								)}
+							</div>
+						</div>
+						{featured.data.heroImage && (
+							<div class="featured-image">
+								<img src={featured.data.heroImage} alt={featured.data.title} />
+							</div>
+						)}
+					</a>
+				)}
+
+				{recent.length > 0 && (
+					<div class="articles-grid">
+						{recent.map((post) => (
+							<a href={`/blog/${post.id}/`} class="article-card">
+								{post.data.series && (
+									<span class="article-tag">{post.data.series}</span>
+								)}
+								<h4>{post.data.title}</h4>
+								<div class="article-date">
+									<FormattedDate date={post.data.pubDate} />
+								</div>
+							</a>
+						))}
+					</div>
+				)}
+
+				<div class="subscribe-inline">
+					<div class="subscribe-text">
+						<h4>Stay in the conversation.</h4>
+						<p>New articles every week. No noise, no filler.</p>
+					</div>
+					<div class="subscribe-form">
+						<input type="email" placeholder="Your email address" />
+						<button type="button">Subscribe</button>
+					</div>
+				</div>
+			</div>
+		</section>
+
 		<Footer />
 	</body>
 </html>
