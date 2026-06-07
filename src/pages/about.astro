@@ -1,62 +1,365 @@
 ---
-import Layout from '../layouts/BlogPost.astro';
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
 ---
 
-<Layout
-	title="About Me"
-	description="Lorem ipsum dolor sit amet"
-	pubDate={new Date('August 08 2021')}
-	heroImage="/blog-placeholder-about.jpg"
->
-	<p>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-		labore et dolore magna aliqua. Vitae ultricies leo integer malesuada nunc vel risus commodo
-		viverra. Adipiscing enim eu turpis egestas pretium. Euismod elementum nisi quis eleifend quam
-		adipiscing. In hac habitasse platea dictumst vestibulum. Sagittis purus sit amet volutpat. Netus
-		et malesuada fames ac turpis egestas. Eget magna fermentum iaculis eu non diam phasellus
-		vestibulum lorem. Varius sit amet mattis vulputate enim. Habitasse platea dictumst quisque
-		sagittis. Integer quis auctor elit sed vulputate mi. Dictumst quisque sagittis purus sit amet.
-	</p>
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title="About — Cedric Anne" description="VP, Technical Services at PointClickCare. Writing about AI leadership, organizational transformation, and the future of healthcare technology." />
+		<style>
+			:root {
+				--navy: #0F172A;
+				--navy-mid: #1E293B;
+				--navy-light: #334155;
+				--teal: #14B8A6;
+				--teal-dark: #0F766E;
+				--gold: #F59E0B;
+				--text-muted: #94A3B8;
+				--text-mid: #CBD5E1;
+				--border: rgba(255, 255, 255, 0.08);
+			}
 
-	<p>
-		Morbi tristique senectus et netus. Id semper risus in hendrerit gravida rutrum quisque non
-		tellus. Habitasse platea dictumst quisque sagittis purus sit amet. Tellus molestie nunc non
-		blandit massa. Cursus vitae congue mauris rhoncus. Accumsan tortor posuere ac ut. Fringilla urna
-		porttitor rhoncus dolor. Elit ullamcorper dignissim cras tincidunt lobortis. In cursus turpis
-		massa tincidunt dui ut ornare lectus. Integer feugiat scelerisque varius morbi enim nunc.
-		Bibendum neque egestas congue quisque egestas diam. Cras ornare arcu dui vivamus arcu felis
-		bibendum. Dignissim suspendisse in est ante in nibh mauris. Sed tempus urna et pharetra pharetra
-		massa massa ultricies mi.
-	</p>
+			body {
+				font-family: 'DM Sans', sans-serif;
+				background: var(--navy);
+				color: #ffffff;
+				margin: 0;
+				padding: 0;
+			}
 
-	<p>
-		Mollis nunc sed id semper risus in. Convallis a cras semper auctor neque. Diam sit amet nisl
-		suscipit. Lacus viverra vitae congue eu consequat ac felis donec. Egestas integer eget aliquet
-		nibh praesent tristique magna sit amet. Eget magna fermentum iaculis eu non diam. In vitae
-		turpis massa sed elementum. Tristique et egestas quis ipsum suspendisse ultrices. Eget lorem
-		dolor sed viverra ipsum. Vel turpis nunc eget lorem dolor sed viverra. Posuere ac ut consequat
-		semper viverra nam. Laoreet suspendisse interdum consectetur libero id faucibus. Diam phasellus
-		vestibulum lorem sed risus ultricies tristique. Rhoncus dolor purus non enim praesent elementum
-		facilisis. Ultrices tincidunt arcu non sodales neque. Tempus egestas sed sed risus pretium quam
-		vulputate. Viverra suspendisse potenti nullam ac tortor vitae purus faucibus ornare. Fringilla
-		urna porttitor rhoncus dolor purus non. Amet dictum sit amet justo donec enim.
-	</p>
+			.hero-illustration {
+				width: 100%;
+				max-height: 480px;
+				object-fit: cover;
+				display: block;
+			}
 
-	<p>
-		Mattis ullamcorper velit sed ullamcorper morbi tincidunt. Tortor posuere ac ut consequat semper
-		viverra. Tellus mauris a diam maecenas sed enim ut sem viverra. Venenatis urna cursus eget nunc
-		scelerisque viverra mauris in. Arcu ac tortor dignissim convallis aenean et tortor at. Curabitur
-		gravida arcu ac tortor dignissim convallis aenean et tortor. Egestas tellus rutrum tellus
-		pellentesque eu. Fusce ut placerat orci nulla pellentesque dignissim enim sit amet. Ut enim
-		blandit volutpat maecenas volutpat blandit aliquam etiam. Id donec ultrices tincidunt arcu. Id
-		cursus metus aliquam eleifend mi.
-	</p>
+			.page-header {
+				padding: 80px 40px 60px;
+				max-width: 860px;
+				margin: 0 auto;
+				border-bottom: 1px solid var(--border);
+			}
+			.eyebrow {
+				display: inline-flex;
+				align-items: center;
+				gap: 8px;
+				font-size: 0.7rem;
+				font-weight: 600;
+				letter-spacing: 0.12em;
+				text-transform: uppercase;
+				color: var(--teal);
+				margin-bottom: 1.5rem;
+			}
+			.eyebrow::before {
+				content: '';
+				display: block;
+				width: 24px;
+				height: 2px;
+				background: var(--teal);
+			}
+			.page-header h1 {
+				font-family: 'DM Serif Display', serif;
+				font-size: clamp(2.2rem, 4vw, 3.25rem);
+				line-height: 1.1;
+				letter-spacing: -0.02em;
+				color: #ffffff;
+				margin: 0 0 1.25rem 0;
+			}
+			.page-header h1 em {
+				font-style: italic;
+				color: var(--teal);
+			}
+			.page-header .lead {
+				font-size: 1.1rem;
+				color: var(--text-mid);
+				max-width: 580px;
+				line-height: 1.75;
+				font-weight: 300;
+				margin: 0;
+			}
 
-	<p>
-		Tempus quam pellentesque nec nam aliquam sem. Risus at ultrices mi tempus imperdiet. Id porta
-		nibh venenatis cras sed felis eget velit. Ipsum a arcu cursus vitae. Facilisis magna etiam
-		tempor orci eu lobortis elementum. Tincidunt dui ut ornare lectus sit. Quisque non tellus orci
-		ac. Blandit libero volutpat sed cras. Nec tincidunt praesent semper feugiat nibh sed pulvinar
-		proin gravida. Egestas integer eget aliquet nibh praesent tristique magna.
-	</p>
-</Layout>
+			/* Profile section */
+			.profile-section {
+				padding: 60px 40px;
+				max-width: 860px;
+				margin: 0 auto;
+				display: grid;
+				grid-template-columns: 220px 1fr;
+				gap: 4rem;
+				align-items: start;
+			}
+			.profile-card {
+				position: sticky;
+				top: 2rem;
+			}
+			.avatar {
+				width: 120px;
+				height: 120px;
+				border-radius: 50%;
+				background: linear-gradient(135deg, var(--teal-dark), var(--navy-light));
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				font-family: 'DM Serif Display', serif;
+				font-size: 2.5rem;
+				color: var(--teal);
+				margin-bottom: 1.5rem;
+				border: 2px solid rgba(20, 184, 166, 0.3);
+			}
+			.profile-name {
+				font-family: 'DM Serif Display', serif;
+				font-size: 1.3rem;
+				color: #ffffff;
+				margin-bottom: 0.25rem;
+			}
+			.profile-role {
+				font-size: 0.825rem;
+				color: var(--teal);
+				font-weight: 500;
+				margin-bottom: 0.2rem;
+			}
+			.profile-org {
+				font-size: 0.825rem;
+				color: var(--text-muted);
+				font-weight: 300;
+				margin-bottom: 1.5rem;
+				line-height: 1.6;
+			}
+			.profile-links {
+				display: flex;
+				flex-direction: column;
+				gap: 0.5rem;
+			}
+			.profile-link {
+				display: inline-flex;
+				align-items: center;
+				gap: 8px;
+				font-size: 0.8rem;
+				color: var(--text-muted);
+				text-decoration: none;
+				transition: color 0.2s;
+			}
+			.profile-link:hover { color: var(--teal); }
+			.profile-link svg { flex-shrink: 0; }
+
+			/* Bio content */
+			.bio-content h2 {
+				font-family: 'DM Serif Display', serif;
+				font-size: 1.75rem;
+				letter-spacing: -0.02em;
+				color: #ffffff;
+				margin: 0 0 1.25rem 0;
+			}
+			.bio-content p {
+				font-size: 1rem;
+				color: var(--text-mid);
+				line-height: 1.85;
+				font-weight: 300;
+				margin-bottom: 1.25rem;
+			}
+			.bio-content p strong {
+				color: #ffffff;
+				font-weight: 500;
+			}
+			.bio-content p:last-of-type {
+				margin-bottom: 0;
+			}
+
+			/* Credentials */
+			.credentials-section {
+				background: var(--navy-mid);
+				border-top: 1px solid var(--border);
+				border-bottom: 1px solid var(--border);
+				padding: 60px 40px;
+			}
+			.credentials-inner {
+				max-width: 860px;
+				margin: 0 auto;
+			}
+			.section-eyebrow {
+				font-size: 0.7rem;
+				font-weight: 600;
+				letter-spacing: 0.12em;
+				text-transform: uppercase;
+				color: var(--teal);
+				margin-bottom: 2rem;
+				display: flex;
+				align-items: center;
+				gap: 8px;
+			}
+			.section-eyebrow::before {
+				content: '';
+				display: block;
+				width: 16px;
+				height: 2px;
+				background: var(--teal);
+			}
+			.credentials-grid {
+				display: grid;
+				grid-template-columns: 1fr 1fr 1fr;
+				gap: 1.5px;
+				background: var(--border);
+				border-radius: 12px;
+				overflow: hidden;
+			}
+			.credential-item {
+				background: var(--navy);
+				padding: 2rem;
+			}
+			.credential-label {
+				font-size: 0.65rem;
+				font-weight: 600;
+				letter-spacing: 0.1em;
+				text-transform: uppercase;
+				color: var(--teal);
+				margin-bottom: 0.6rem;
+				display: block;
+			}
+			.credential-value {
+				font-family: 'DM Serif Display', serif;
+				font-size: 1.05rem;
+				color: #ffffff;
+				line-height: 1.35;
+				margin: 0 0 0.35rem 0;
+			}
+			.credential-sub {
+				font-size: 0.8rem;
+				color: var(--text-muted);
+				font-weight: 300;
+				margin: 0;
+			}
+
+			/* Focus areas */
+			.focus-section {
+				padding: 60px 40px;
+				max-width: 860px;
+				margin: 0 auto;
+			}
+			.focus-section h2 {
+				font-family: 'DM Serif Display', serif;
+				font-size: 1.75rem;
+				letter-spacing: -0.02em;
+				color: #ffffff;
+				margin: 0.5rem 0 1.75rem 0;
+			}
+			.pills {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 0.6rem;
+			}
+			.pill {
+				font-size: 0.8rem;
+				color: var(--teal);
+				background: rgba(20, 184, 166, 0.08);
+				border: 1px solid rgba(20, 184, 166, 0.2);
+				padding: 0.4rem 1rem;
+				border-radius: 100px;
+				font-weight: 500;
+			}
+
+			@media (max-width: 720px) {
+				.page-header { padding: 60px 1.5rem 40px; }
+				.profile-section { grid-template-columns: 1fr; gap: 2.5rem; padding: 40px 1.5rem; }
+				.profile-card { position: static; }
+				.credentials-section { padding: 40px 1.5rem; }
+				.credentials-grid { grid-template-columns: 1fr; }
+				.focus-section { padding: 40px 1.5rem; }
+			}
+		</style>
+	</head>
+
+	<body>
+		<Header />
+
+		<img src="/aboutme.jpg" alt="Cedric Anne" class="hero-illustration" />
+
+		<div class="page-header">
+			<div class="eyebrow">About</div>
+			<h1>The person behind<br>the <em>newsletter</em></h1>
+			<p class="lead">I write about what it actually takes to lead through the AI shift — not the hype, but the hard human work of adapting how organizations think, operate, and deliver value.</p>
+		</div>
+
+		<section class="profile-section">
+			<div class="profile-card">
+				<div class="avatar">CA</div>
+				<div class="profile-name">Cedric Anne</div>
+				<div class="profile-role">VP, Technical Services</div>
+				<div class="profile-org">
+					PointClickCare<br><br>
+					Fellow, American College<br>of Health Data Management<br><br>
+					Vice Chair, AI Community<br>of Practice
+				</div>
+				<div class="profile-links">
+					<a href="https://www.linkedin.com/in/cedricanne/" target="_blank" rel="noopener noreferrer" class="profile-link">
+						<svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
+							<path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z"/>
+						</svg>
+						Connect on LinkedIn
+					</a>
+				</div>
+			</div>
+
+			<div class="bio-content">
+				<h2>Why I write about AI and leadership</h2>
+				<p>
+					I have spent my career at the intersection of technology and the people who use it. For the past several years, that has meant being on the front lines of one of the most significant shifts in how organizations work — the rise of artificial intelligence as a genuine collaborator in everyday decisions.
+				</p>
+				<p>
+					In my role as VP of Technical Services at <strong>PointClickCare</strong>, I work with teams navigating the real complexity of AI adoption in healthcare technology — an industry where the stakes are high, the workflows are intricate, and the margin for error is narrow. That experience shapes everything I write.
+				</p>
+				<p>
+					Most conversations about AI focus on the technology itself — the models, the features, the benchmarks. <strong>I believe the harder problem is human.</strong> How do people build new habits when their tools can now think? How do leaders make good decisions when information is no longer the scarce resource? How do organizations redesign work when intelligence becomes abundant?
+				</p>
+				<p>
+					Those are the questions this newsletter explores. Not from a theoretical distance, but from inside organizations actively working through the transition.
+				</p>
+				<p>
+					I write for leaders, practitioners, and anyone trying to make sense of what it means to work — and lead — in an AI-first world.
+				</p>
+			</div>
+		</section>
+
+		<section class="credentials-section">
+			<div class="credentials-inner">
+				<div class="section-eyebrow">Background</div>
+				<div class="credentials-grid">
+					<div class="credential-item">
+						<span class="credential-label">Current Role</span>
+						<p class="credential-value">VP, Technical Services</p>
+						<p class="credential-sub">PointClickCare</p>
+					</div>
+					<div class="credential-item">
+						<span class="credential-label">Recognition</span>
+						<p class="credential-value">Fellow, ACHDM</p>
+						<p class="credential-sub">American College of Health Data Management</p>
+					</div>
+					<div class="credential-item">
+						<span class="credential-label">Community</span>
+						<p class="credential-value">Vice Chair, AI CoP</p>
+						<p class="credential-sub">AI Community of Practice</p>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<section class="focus-section">
+			<div class="section-eyebrow">Areas of Focus</div>
+			<h2>What I think and write about</h2>
+			<div class="pills">
+				<span class="pill">AI Strategy</span>
+				<span class="pill">Agentic AI</span>
+				<span class="pill">Healthcare Technology</span>
+				<span class="pill">Change Management</span>
+				<span class="pill">Leadership</span>
+				<span class="pill">Knowledge Protocol Engineering</span>
+				<span class="pill">Organizational Transformation</span>
+				<span class="pill">AI-First Workflows</span>
+			</div>
+		</section>
+
+		<Footer />
+	</body>
+</html>
