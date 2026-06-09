@@ -13,15 +13,10 @@ Every generation of business leaders eventually falls into the same trap.
 We become obsessed with measuring the thing that is easiest to count rather than the thing that actually creates value.
 
 A few decades ago, organizations measured productivity by hours worked.
-
 Then we measured meetings attended.
-
 Then we measured emails sent.
-
 Then we measured activity in CRM systems.
-
 Today, some organizations are starting to measure AI success through token consumption.
-
 And I think we are watching the same mistake unfold all over again.
 
 Over the past year, "token maxxing" became a surprisingly common phenomenon inside AI-forward organizations. Leaders wanted proof that employees were embracing AI. Teams wanted evidence that their investments were paying off. Employees wanted to demonstrate that they were participating in the AI revolution.
@@ -49,9 +44,7 @@ None of this should surprise us.
 We have seen this movie before.
 
 When sales organizations measure call volume, people maximize calls.
-
 When support organizations measure handle time, people shorten conversations.
-
 When engineering organizations measure lines of code, developers write more code.
 
 Every metric creates a behavior.
@@ -71,17 +64,11 @@ Why?
 Because modern AI systems do far more than answer questions.
 
 They reason.
-
 They search.
-
 They use tools.
-
 They read documents.
-
 They call APIs.
-
 They execute workflows.
-
 They collaborate with other agents.
 
 Every one of those activities consumes tokens.
@@ -134,11 +121,8 @@ Those are the metrics that matter.
 Once organizations begin thinking this way, the entire conversation changes.
 
 Model selection changes.
-
 Workflow design changes.
-
 Governance changes.
-
 Architecture decisions change.
 
 Instead of automatically selecting the most powerful model available, organizations begin matching the right model to the right problem. A lightweight model may be perfectly capable of classifying tickets, extracting information from documents, or generating summaries. More advanced models can then be reserved for complex reasoning, strategic analysis, creative work, or high-value decision support.
@@ -154,9 +138,7 @@ AI requires the same discipline.
 What I believe we are witnessing right now is the beginning of the next phase of enterprise AI maturity.
 
 The first phase was proving the technology worked.
-
 The second phase was driving adoption.
-
 The third phase will be driven by economics.
 
 Leaders will increasingly be asked to demonstrate not how much AI they are consuming, but how much business value they are creating from that consumption.
