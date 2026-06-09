@@ -1,7 +1,9 @@
 {
 	"name": "aimyselfandi",
 	"compatibility_date": "2025-10-08",
-	"compatibility_flags": ["nodejs_compat"],
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
 	"main": "./dist/_worker.js/index.js",
 	"assets": {
 		"directory": "./dist",
@@ -13,9 +15,9 @@
 	"upload_source_maps": true,
 	"d1_databases": [
 		{
-			"binding": "DB",
+			"binding": "subscribers_db",
 			"database_name": "subscribers-db",
-			"database_id": "REPLACE_WITH_YOUR_DATABASE_ID"
+			"database_id": "6fa2bad6-76a1-4a0d-9e92-e00da7255ece"
 		}
 	]
 }

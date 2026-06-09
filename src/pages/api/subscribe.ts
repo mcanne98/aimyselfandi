@@ -3,8 +3,8 @@ import type { APIRoute } from 'astro';
 export const prerender = false;
 
 export const POST: APIRoute = async ({ request, locals }) => {
-	const env = (locals as { runtime?: { env?: { DB?: D1Database } } }).runtime?.env;
-	const db = env?.DB;
+	const env = (locals as { runtime?: { env?: { subscribers_db?: D1Database } } }).runtime?.env;
+	const db = env?.subscribers_db;
 
 	// Parse body
 	let email: string | undefined;
