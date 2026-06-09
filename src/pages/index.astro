@@ -838,16 +838,63 @@ const recent = allPosts.slice(1, 4);
 					</div>
 				)}
 
-				<div class="subscribe-inline">
+				<div class="subscribe-inline" id="subscribe-block">
 					<div class="subscribe-text">
 						<h4>Stay in the conversation.</h4>
 						<p>New articles every week. No noise, no filler.</p>
 					</div>
 					<div class="subscribe-form">
-						<input type="email" placeholder="Your email address" />
-						<button type="button">Subscribe</button>
+						<input type="email" id="subscribe-email" placeholder="Your email address" autocomplete="email" />
+						<button type="button" id="subscribe-btn">Subscribe</button>
 					</div>
+					<p id="subscribe-msg" style="display:none;font-size:0.85rem;margin:0;"></p>
 				</div>
+				<script>
+					const btn = document.getElementById('subscribe-btn');
+					const input = document.getElementById('subscribe-email');
+					const msg = document.getElementById('subscribe-msg');
+
+					btn?.addEventListener('click', async () => {
+						const email = (input as HTMLInputElement).value.trim();
+						if (!email) {
+							showMsg('Please enter your email address.', 'error');
+							return;
+						}
+
+						btn.setAttribute('disabled', 'true');
+						(btn as HTMLButtonElement).textContent = 'Subscribing…';
+
+						try {
+							const res = await fetch('/api/subscribe', {
+								method: 'POST',
+								headers: { 'Content-Type': 'application/json' },
+								body: JSON.stringify({ email }),
+							});
+							const data = await res.json() as { success?: boolean; error?: string };
+
+							if (data.success) {
+								(input as HTMLInputElement).style.display = 'none';
+								(btn as HTMLButtonElement).style.display = 'none';
+								showMsg('You\'re in. Welcome to the conversation.', 'success');
+							} else {
+								btn.removeAttribute('disabled');
+								(btn as HTMLButtonElement).textContent = 'Subscribe';
+								showMsg(data.error ?? 'Something went wrong. Please try again.', 'error');
+							}
+						} catch {
+							btn.removeAttribute('disabled');
+							(btn as HTMLButtonElement).textContent = 'Subscribe';
+							showMsg('Something went wrong. Please try again.', 'error');
+						}
+					});
+
+					function showMsg(text: string, type: 'success' | 'error') {
+						if (!msg) return;
+						msg.textContent = text;
+						msg.style.display = 'block';
+						msg.style.color = type === 'success' ? '#14B8A6' : '#F87171';
+					}
+				</script>
 			</div>
 		</section>
 
