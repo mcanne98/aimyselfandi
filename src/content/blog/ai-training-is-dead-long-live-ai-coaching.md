@@ -1,7 +1,7 @@
 ---
 title: "AI Training Is Dead. Long Live AI Coaching."
 description: "The question is not how we train employees to use AI. The question is how we help employees continuously discover better ways of working because AI exists."
-pubDate: "Jun 01 2025"
+pubDate: "Jun 01 2026"
 heroImage: "/blog/ai-training-is-dead-long-live-ai-coaching.jpg"
 series: "AI-First Mindset"
 ---

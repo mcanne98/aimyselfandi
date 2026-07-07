@@ -1,7 +1,7 @@
 ---
 title: "The New AI Vanity Metric Nobody Is Talking About"
 description: "Token consumption is becoming the new lines of code — a number that's easy to measure and nearly useless as a proxy for value. Here's what to track instead."
-pubDate: "Jun 08 2025"
+pubDate: "Jun 08 2026"
 heroImage: "/blog/the-new-ai-vanity-metric-nobody-is-talking-about.jpg"
 series: "AI-First Mindset"
 ---

@@ -1,7 +1,7 @@
 ---
 title: "The AI Workflow Series Part 2 — Start With the End: Why /goals Is the Most Important Prompt You'll Ever Write"
 description: "Great prompts answer questions. Great goals define success. Without a clearly articulated outcome, AI can help you build the wrong thing faster."
-pubDate: "Jul 07 2025"
+pubDate: "Jul 07 2026"
 heroImage: "/blog/ai-workflow-series-part-2-goals.jpg"
 series: "AI-First Mindset"
 ---

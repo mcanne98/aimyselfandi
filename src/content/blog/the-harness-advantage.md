@@ -1,7 +1,7 @@
 ---
 title: "The Harness Advantage: Why Competitive Advantage Has Moved Up the Stack"
 description: "The organizations that win the next decade of AI will not necessarily have the smartest model. They will have the strongest Harness."
-pubDate: "Jun 22 2025"
+pubDate: "Jun 22 2026"
 heroImage: "/blog/the-harness-advantage.jpg"
 series: "AI-First Mindset"
 ---
