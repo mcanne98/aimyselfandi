@@ -1,7 +1,7 @@
 ---
 title: "The AI Workflow Series - Why Great AI Starts Long Before the Prompt"
 description: "Prompt engineering taught us how to talk to AI. Workflow engineering will teach us how to think with AI. Introducing the AI Workflow Framework."
-pubDate: "Jun 29 2025"
+pubDate: "Jun 29 2026"
 heroImage: "/blog/ai-workflow-series-why-great-ai-starts-before-the-prompt.jpg"
 series: "AI-First Mindset"
 ---

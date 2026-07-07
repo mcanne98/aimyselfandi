@@ -1,7 +1,7 @@
 ---
 title: "AI Is Compressing the Career Ladder"
 description: "AI isn't just automating work — it's accelerating access to expertise. Junior employees are being asked to exercise judgment that once took a decade to develop. That changes everything."
-pubDate: "Jun 15 2025"
+pubDate: "Jun 15 2026"
 heroImage: "/blog/ai-is-compressing-the-career-ladder.jpg"
 series: "AI-First Mindset"
 ---
