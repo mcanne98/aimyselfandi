@@ -1,0 +1,699 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { getCollection } from 'astro:content';
+import FormattedDate from '../components/FormattedDate.astro';
+
+export const prerender = false;
+
+const allPosts = (await getCollection('blog')).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+const recent = allPosts.slice(0, 3);
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead
+			title="Subscribe — AI, Myself & I by Cedric Anne"
+			description="Weekly insights on AI leadership, organizational transformation, and the future of work — from the front lines of healthcare technology."
+		/>
+		<style>
+			:root {
+				--navy: #0F172A;
+				--navy-mid: #1E293B;
+				--navy-light: #334155;
+				--teal: #14B8A6;
+				--teal-dark: #0F766E;
+				--gold: #F59E0B;
+				--text-muted: #94A3B8;
+				--text-mid: #CBD5E1;
+				--border: rgba(255, 255, 255, 0.08);
+			}
+
+			body {
+				font-family: 'DM Sans', sans-serif;
+				background: var(--navy);
+				color: #ffffff;
+				margin: 0;
+				padding: 0;
+			}
+
+			/* ── TRUST BAR ── */
+			.trust-bar {
+				background: rgba(20, 184, 166, 0.06);
+				border-bottom: 1px solid rgba(20, 184, 166, 0.15);
+				padding: 0.6rem 1.5rem;
+				text-align: center;
+				font-size: 0.75rem;
+				color: var(--text-muted);
+				letter-spacing: 0.04em;
+			}
+			.trust-bar span {
+				display: inline-flex;
+				align-items: center;
+				gap: 1.5rem;
+				flex-wrap: wrap;
+				justify-content: center;
+			}
+			.trust-bar b {
+				color: var(--teal);
+				font-weight: 500;
+			}
+			.tb-sep {
+				color: var(--border);
+				opacity: 0.5;
+				font-weight: 300;
+			}
+
+			/* ── HERO ── */
+			.hero {
+				padding: 80px 40px 72px;
+				max-width: 720px;
+				margin: 0 auto;
+				text-align: center;
+			}
+			.eyebrow {
+				display: inline-flex;
+				align-items: center;
+				gap: 8px;
+				font-size: 0.7rem;
+				font-weight: 600;
+				letter-spacing: 0.12em;
+				text-transform: uppercase;
+				color: var(--teal);
+				margin-bottom: 1.75rem;
+				justify-content: center;
+			}
+			.eyebrow::before, .eyebrow::after {
+				content: '';
+				display: block;
+				width: 20px;
+				height: 2px;
+				background: var(--teal);
+			}
+			.hero h1 {
+				font-family: 'DM Serif Display', serif;
+				font-size: clamp(2.4rem, 5vw, 3.6rem);
+				line-height: 1.1;
+				letter-spacing: -0.02em;
+				color: #ffffff;
+				margin: 0 0 1.25rem 0;
+			}
+			.hero h1 em {
+				font-style: italic;
+				color: var(--teal);
+			}
+			.hero-sub {
+				font-size: 1.125rem;
+				color: var(--text-mid);
+				line-height: 1.75;
+				margin: 0 auto 2.5rem;
+				font-weight: 300;
+				max-width: 540px;
+			}
+
+			/* ── SUBSCRIBE FORM ── */
+			.subscribe-box {
+				background: var(--navy-mid);
+				border: 1px solid rgba(20, 184, 166, 0.25);
+				border-radius: 16px;
+				padding: 2.5rem;
+				max-width: 520px;
+				margin: 0 auto;
+			}
+			.subscribe-box label {
+				display: block;
+				font-size: 0.8rem;
+				font-weight: 600;
+				color: var(--text-muted);
+				text-transform: uppercase;
+				letter-spacing: 0.1em;
+				margin-bottom: 0.75rem;
+				text-align: left;
+			}
+			.form-row {
+				display: flex;
+				gap: 0.75rem;
+			}
+			.form-row input {
+				flex: 1;
+				background: var(--navy);
+				border: 1px solid var(--border);
+				color: #ffffff;
+				padding: 0.85rem 1rem;
+				border-radius: 10px;
+				font-size: 1rem;
+				font-family: 'DM Sans', sans-serif;
+				outline: none;
+				transition: border-color 0.2s;
+				min-width: 0;
+			}
+			.form-row input::placeholder { color: var(--text-muted); }
+			.form-row input:focus { border-color: var(--teal); }
+			.form-row button {
+				background: var(--teal);
+				color: var(--navy);
+				border: none;
+				font-family: 'DM Sans', sans-serif;
+				font-weight: 700;
+				font-size: 0.95rem;
+				padding: 0.85rem 1.5rem;
+				border-radius: 10px;
+				cursor: pointer;
+				white-space: nowrap;
+				transition: background 0.2s, transform 0.15s;
+				flex-shrink: 0;
+			}
+			.form-row button:hover {
+				background: var(--teal-dark);
+				color: #ffffff;
+				transform: translateY(-1px);
+			}
+			.form-row button:disabled {
+				opacity: 0.6;
+				cursor: not-allowed;
+				transform: none;
+			}
+			#subscribe-msg {
+				display: none;
+				font-size: 0.875rem;
+				margin: 1rem 0 0;
+				text-align: left;
+				line-height: 1.5;
+			}
+			.form-privacy {
+				font-size: 0.75rem;
+				color: var(--text-muted);
+				text-align: center;
+				margin-top: 1rem;
+				font-weight: 300;
+			}
+
+			/* Success state */
+			.success-state {
+				display: none;
+				text-align: center;
+				padding: 1rem 0;
+			}
+			.success-icon {
+				width: 56px;
+				height: 56px;
+				border-radius: 50%;
+				background: rgba(20, 184, 166, 0.1);
+				border: 2px solid rgba(20, 184, 166, 0.3);
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				margin: 0 auto 1.25rem;
+				font-size: 1.5rem;
+			}
+			.success-state h3 {
+				font-family: 'DM Serif Display', serif;
+				font-size: 1.5rem;
+				color: #ffffff;
+				margin: 0 0 0.5rem;
+			}
+			.success-state p {
+				font-size: 0.9rem;
+				color: var(--text-muted);
+				margin: 0;
+				font-weight: 300;
+			}
+
+			/* ── VALUE STRIP ── */
+			.value-strip {
+				padding: 56px 40px;
+				max-width: 820px;
+				margin: 0 auto;
+				display: grid;
+				grid-template-columns: 1fr 1fr 1fr;
+				gap: 1.5px;
+				background: var(--border);
+				border-radius: 12px;
+				overflow: hidden;
+			}
+			.value-item {
+				background: var(--navy);
+				padding: 2rem 1.75rem;
+			}
+			.value-icon {
+				font-size: 1.4rem;
+				margin-bottom: 0.75rem;
+				display: block;
+			}
+			.value-item h3 {
+				font-family: 'DM Serif Display', serif;
+				font-size: 1.1rem;
+				color: #ffffff;
+				margin: 0 0 0.5rem;
+				letter-spacing: -0.01em;
+			}
+			.value-item p {
+				font-size: 0.825rem;
+				color: var(--text-muted);
+				line-height: 1.65;
+				margin: 0;
+				font-weight: 300;
+			}
+
+			/* ── AUTHOR SECTION ── */
+			.author-section {
+				background: var(--navy-mid);
+				border-top: 1px solid var(--border);
+				border-bottom: 1px solid var(--border);
+				padding: 72px 40px;
+			}
+			.author-inner {
+				max-width: 720px;
+				margin: 0 auto;
+				display: flex;
+				gap: 3rem;
+				align-items: center;
+			}
+			.author-avatar {
+				width: 96px;
+				height: 96px;
+				border-radius: 50%;
+				background: linear-gradient(135deg, var(--teal-dark), var(--navy-light));
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				font-family: 'DM Serif Display', serif;
+				font-size: 2rem;
+				color: var(--teal);
+				flex-shrink: 0;
+				border: 2px solid rgba(20, 184, 166, 0.3);
+			}
+			.author-bio h3 {
+				font-family: 'DM Serif Display', serif;
+				font-size: 1.4rem;
+				color: #ffffff;
+				margin: 0 0 0.35rem;
+				letter-spacing: -0.01em;
+			}
+			.author-role {
+				font-size: 0.825rem;
+				color: var(--teal);
+				font-weight: 500;
+				margin-bottom: 0.75rem;
+			}
+			.author-bio p {
+				font-size: 0.9rem;
+				color: var(--text-mid);
+				line-height: 1.75;
+				margin: 0 0 1rem;
+				font-weight: 300;
+			}
+			.credential-pills {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 0.5rem;
+			}
+			.pill {
+				font-size: 0.75rem;
+				color: var(--teal);
+				background: rgba(20, 184, 166, 0.08);
+				border: 1px solid rgba(20, 184, 166, 0.2);
+				padding: 0.3rem 0.85rem;
+				border-radius: 100px;
+				font-weight: 500;
+			}
+
+			/* ── RECENT ARTICLES ── */
+			.articles-section {
+				padding: 72px 40px;
+				max-width: 820px;
+				margin: 0 auto;
+			}
+			.section-eyebrow {
+				font-size: 0.7rem;
+				font-weight: 600;
+				letter-spacing: 0.12em;
+				text-transform: uppercase;
+				color: var(--teal);
+				margin-bottom: 0.5rem;
+				display: flex;
+				align-items: center;
+				gap: 8px;
+			}
+			.section-eyebrow::before {
+				content: '';
+				display: block;
+				width: 16px;
+				height: 2px;
+				background: var(--teal);
+			}
+			.articles-section h2 {
+				font-family: 'DM Serif Display', serif;
+				font-size: 1.75rem;
+				letter-spacing: -0.02em;
+				color: #ffffff;
+				margin: 0.4rem 0 2rem;
+			}
+			.articles-grid {
+				display: grid;
+				grid-template-columns: 1fr 1fr 1fr;
+				gap: 1.5px;
+				background: var(--border);
+				border-radius: 12px;
+				overflow: hidden;
+			}
+			.article-card {
+				background: var(--navy-mid);
+				padding: 1.75rem;
+				text-decoration: none;
+				display: block;
+				transition: background 0.2s;
+				position: relative;
+			}
+			.article-card:hover { background: var(--navy-light); }
+			.article-tag {
+				font-size: 0.65rem;
+				font-weight: 600;
+				letter-spacing: 0.1em;
+				text-transform: uppercase;
+				color: var(--teal);
+				margin-bottom: 0.6rem;
+				display: block;
+			}
+			.article-card h4 {
+				font-family: 'DM Serif Display', serif;
+				font-size: 1rem;
+				color: #ffffff;
+				line-height: 1.35;
+				margin: 0 0 0.6rem;
+				letter-spacing: -0.01em;
+			}
+			.article-date {
+				font-size: 0.75rem;
+				color: var(--text-muted);
+			}
+
+			/* ── BOTTOM CTA ── */
+			.bottom-cta {
+				background: linear-gradient(180deg, var(--navy-mid) 0%, var(--navy) 100%);
+				border-top: 1px solid var(--border);
+				padding: 80px 40px;
+				text-align: center;
+			}
+			.bottom-cta h2 {
+				font-family: 'DM Serif Display', serif;
+				font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+				letter-spacing: -0.02em;
+				color: #ffffff;
+				margin: 0 auto 0.75rem;
+				max-width: 560px;
+				line-height: 1.2;
+			}
+			.bottom-cta h2 em {
+				font-style: italic;
+				color: var(--teal);
+			}
+			.bottom-cta p {
+				font-size: 1rem;
+				color: var(--text-muted);
+				margin: 0 auto 2.5rem;
+				font-weight: 300;
+				max-width: 420px;
+			}
+			.bottom-form {
+				display: flex;
+				gap: 0.75rem;
+				justify-content: center;
+				max-width: 460px;
+				margin: 0 auto;
+			}
+			.bottom-form input {
+				flex: 1;
+				background: var(--navy-mid);
+				border: 1px solid var(--border);
+				color: #ffffff;
+				padding: 0.85rem 1rem;
+				border-radius: 10px;
+				font-size: 0.95rem;
+				font-family: 'DM Sans', sans-serif;
+				outline: none;
+				transition: border-color 0.2s;
+				min-width: 0;
+			}
+			.bottom-form input::placeholder { color: var(--text-muted); }
+			.bottom-form input:focus { border-color: var(--teal); }
+			.bottom-form button {
+				background: var(--teal);
+				color: var(--navy);
+				border: none;
+				font-family: 'DM Sans', sans-serif;
+				font-weight: 700;
+				font-size: 0.95rem;
+				padding: 0.85rem 1.5rem;
+				border-radius: 10px;
+				cursor: pointer;
+				white-space: nowrap;
+				transition: background 0.2s, transform 0.15s;
+				flex-shrink: 0;
+			}
+			.bottom-form button:hover {
+				background: var(--teal-dark);
+				color: #ffffff;
+				transform: translateY(-1px);
+			}
+			.bottom-form button:disabled {
+				opacity: 0.6;
+				cursor: not-allowed;
+				transform: none;
+			}
+			#bottom-msg {
+				display: none;
+				font-size: 0.875rem;
+				margin: 1rem auto 0;
+				max-width: 460px;
+			}
+			.bottom-cta .form-privacy {
+				font-size: 0.75rem;
+				color: var(--text-muted);
+				text-align: center;
+				margin-top: 1rem;
+				font-weight: 300;
+			}
+
+			/* ── RESPONSIVE ── */
+			@media (max-width: 720px) {
+				.hero { padding: 60px 1.5rem 56px; }
+				.trust-bar span { gap: 1rem; }
+				.value-strip { grid-template-columns: 1fr; padding: 0 1.5rem; }
+				.author-section { padding: 56px 1.5rem; }
+				.author-inner { flex-direction: column; gap: 1.5rem; }
+				.articles-section { padding: 56px 1.5rem; }
+				.articles-grid { grid-template-columns: 1fr; }
+				.bottom-cta { padding: 64px 1.5rem; }
+				.bottom-form { flex-direction: column; }
+				.form-row { flex-direction: column; }
+				.subscribe-box { padding: 1.75rem 1.25rem; }
+			}
+		</style>
+	</head>
+
+	<body>
+		<Header />
+
+		<!-- TRUST BAR -->
+		<div class="trust-bar">
+			<span>
+				<b>Weekly</b> · New article every week
+				<span class="tb-sep">|</span>
+				<b>No spam</b> · Only original content
+				<span class="tb-sep">|</span>
+				<b>Free</b> · Always
+				<span class="tb-sep">|</span>
+				<b>Unsubscribe</b> · Anytime, one click
+			</span>
+		</div>
+
+		<!-- HERO -->
+		<section class="hero">
+			<div class="eyebrow">Join the Newsletter</div>
+			<h1>Think differently<br>about <em>AI leadership</em></h1>
+			<p class="hero-sub">
+				One original idea, every week. Written for leaders navigating the AI shift — not the hype, but the hard human work of adapting how organizations think, operate, and deliver value.
+			</p>
+
+			<div class="subscribe-box">
+				<div id="form-area">
+					<label for="hero-email">Your email address</label>
+					<div class="form-row">
+						<input
+							type="email"
+							id="hero-email"
+							placeholder="you@example.com"
+							autocomplete="email"
+						/>
+						<button type="button" id="hero-btn">Subscribe →</button>
+					</div>
+					<p id="hero-msg" style="display:none;font-size:0.875rem;margin:0.75rem 0 0;text-align:left;"></p>
+					<p class="form-privacy">No spam. No filler. Just original thinking on AI and leadership.</p>
+				</div>
+				<div class="success-state" id="hero-success">
+					<div class="success-icon">✓</div>
+					<h3>You're in.</h3>
+					<p>Welcome to the conversation. You'll receive the next issue in your inbox.</p>
+				</div>
+			</div>
+		</section>
+
+		<!-- VALUE STRIP -->
+		<div style="padding: 0 40px; max-width: 820px; margin: 0 auto 72px;">
+			<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.5px;background:var(--border);border-radius:12px;overflow:hidden;">
+				<div style="background:var(--navy);padding:2rem 1.75rem;">
+					<span style="font-size:1.4rem;display:block;margin-bottom:0.75rem;">✦</span>
+					<h3 style="font-family:'DM Serif Display',serif;font-size:1.1rem;color:#fff;margin:0 0 0.5rem;letter-spacing:-0.01em;">Original insight</h3>
+					<p style="font-size:0.825rem;color:var(--text-muted);line-height:1.65;margin:0;font-weight:300;">Not a news roundup. One original idea, fully developed, with real implications for how you lead.</p>
+				</div>
+				<div style="background:var(--navy);padding:2rem 1.75rem;">
+					<span style="font-size:1.4rem;display:block;margin-bottom:0.75rem;">◈</span>
+					<h3 style="font-family:'DM Serif Display',serif;font-size:1.1rem;color:#fff;margin:0 0 0.5rem;letter-spacing:-0.01em;">No noise</h3>
+					<p style="font-size:0.825rem;color:var(--text-muted);line-height:1.65;margin:0;font-weight:300;">Every article earns its place. If it doesn't add value, it doesn't ship. Simple as that.</p>
+				</div>
+				<div style="background:var(--navy);padding:2rem 1.75rem;">
+					<span style="font-size:1.4rem;display:block;margin-bottom:0.75rem;">◎</span>
+					<h3 style="font-family:'DM Serif Display',serif;font-size:1.1rem;color:#fff;margin:0 0 0.5rem;letter-spacing:-0.01em;">From the front lines</h3>
+					<p style="font-size:0.825rem;color:var(--text-muted);line-height:1.65;margin:0;font-weight:300;">Written from inside a high-stakes industry navigating real AI transformation — not from the sidelines.</p>
+				</div>
+			</div>
+		</div>
+
+		<!-- AUTHOR -->
+		<section class="author-section">
+			<div class="author-inner">
+				<div class="author-avatar">CA</div>
+				<div class="author-bio">
+					<h3>Cedric Anne</h3>
+					<div class="author-role">VP, Technical Services · PointClickCare</div>
+					<p>
+						I have spent my career at the intersection of technology and the people who use it. For the past several years, that has meant being on the front lines of AI adoption in healthcare technology — an industry where the stakes are high and the margin for error is narrow.
+					</p>
+					<p>
+						<strong style="color:#fff;font-weight:500;">I believe the harder problem is human.</strong> How do leaders make good decisions when information is no longer scarce? How do organizations redesign work when intelligence becomes abundant? Those are the questions this newsletter explores.
+					</p>
+					<div class="credential-pills">
+						<span class="pill">Fellow, ACHDM</span>
+						<span class="pill">Vice Chair, AI CoP</span>
+						<span class="pill">AI Strategy</span>
+						<span class="pill">Leadership</span>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- RECENT ARTICLES -->
+		<section class="articles-section">
+			<div class="section-eyebrow">A taste of what you'll get</div>
+			<h2>Recent articles</h2>
+			<div class="articles-grid">
+				{recent.map((post) => (
+					<a href={`/blog/${post.id}/`} class="article-card">
+						{post.data.series && (
+							<span class="article-tag">{post.data.series}</span>
+						)}
+						<h4>{post.data.title}</h4>
+						<div class="article-date">
+							<FormattedDate date={post.data.pubDate} />
+						</div>
+					</a>
+				))}
+			</div>
+		</section>
+
+		<!-- BOTTOM CTA -->
+		<section class="bottom-cta">
+			<h2>Ready to think differently<br>about <em>AI?</em></h2>
+			<p>Join leaders and practitioners reading AI, Myself & I every week.</p>
+			<div class="bottom-form">
+				<input
+					type="email"
+					id="bottom-email"
+					placeholder="Your email address"
+					autocomplete="email"
+				/>
+				<button type="button" id="bottom-btn">Subscribe →</button>
+			</div>
+			<p id="bottom-msg" style="display:none;font-size:0.875rem;margin:1rem auto 0;max-width:460px;"></p>
+			<p class="form-privacy">Free · Weekly · Unsubscribe anytime</p>
+		</section>
+
+		<Footer />
+
+		<script>
+			function makeSubscribeHandler(
+				emailId: string,
+				btnId: string,
+				msgId: string,
+				successId?: string,
+				formAreaId?: string
+			) {
+				const emailEl = document.getElementById(emailId) as HTMLInputElement | null;
+				const btn = document.getElementById(btnId) as HTMLButtonElement | null;
+				const msg = document.getElementById(msgId);
+				const successEl = successId ? document.getElementById(successId) : null;
+				const formArea = formAreaId ? document.getElementById(formAreaId) : null;
+
+				btn?.addEventListener('click', async () => {
+					const email = emailEl?.value.trim() ?? '';
+					if (!email) {
+						showMsg(msg, 'Please enter your email address.', 'error');
+						return;
+					}
+
+					if (btn) {
+						btn.disabled = true;
+						btn.textContent = 'Subscribing…';
+					}
+
+					try {
+						const res = await fetch('/api/subscribe', {
+							method: 'POST',
+							headers: { 'Content-Type': 'application/json' },
+							body: JSON.stringify({ email }),
+						});
+						const data = await res.json() as { success?: boolean; error?: string };
+
+						if (data.success) {
+							if (successEl && formArea) {
+								formArea.style.display = 'none';
+								successEl.style.display = 'block';
+							} else {
+								if (emailEl) emailEl.style.display = 'none';
+								if (btn) btn.style.display = 'none';
+								showMsg(msg, 'You\'re in. Welcome to the conversation.', 'success');
+							}
+						} else {
+							if (btn) {
+								btn.disabled = false;
+								btn.textContent = 'Subscribe →';
+							}
+							showMsg(msg, data.error ?? 'Something went wrong. Please try again.', 'error');
+						}
+					} catch {
+						if (btn) {
+							btn.disabled = false;
+							btn.textContent = 'Subscribe →';
+						}
+						showMsg(msg, 'Something went wrong. Please try again.', 'error');
+					}
+				});
+			}
+
+			function showMsg(el: HTMLElement | null, text: string, type: 'success' | 'error') {
+				if (!el) return;
+				el.textContent = text;
+				el.style.display = 'block';
+				el.style.color = type === 'success' ? '#14B8A6' : '#F87171';
+			}
+
+			makeSubscribeHandler('hero-email', 'hero-btn', 'hero-msg', 'hero-success', 'form-area');
+			makeSubscribeHandler('bottom-email', 'bottom-btn', 'bottom-msg');
+		</script>
+	</body>
+</html>
