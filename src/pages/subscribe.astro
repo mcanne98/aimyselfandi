@@ -62,6 +62,11 @@ const recent = allPosts.slice(0, 3);
 				color: var(--teal);
 				font-weight: 500;
 			}
+			.tb-sep {
+				color: var(--border);
+				opacity: 0.5;
+				font-weight: 300;
+			}
 
 			/* ── HERO ── */
 			.hero {
@@ -497,10 +502,13 @@ const recent = allPosts.slice(0, 3);
 		<!-- TRUST BAR -->
 		<div class="trust-bar">
 			<span>
-				<b>Weekly</b> &mdash; new article every week
-				<b>No spam</b> &mdash; only original content
-				<b>Free</b> &mdash; always
-				<b>Unsubscribe</b> &mdash; anytime, one click
+				<b>Weekly</b> · New article every week
+				<span class="tb-sep">|</span>
+				<b>No spam</b> · Only original content
+				<span class="tb-sep">|</span>
+				<b>Free</b> · Always
+				<span class="tb-sep">|</span>
+				<b>Unsubscribe</b> · Anytime, one click
 			</span>
 		</div>
 
