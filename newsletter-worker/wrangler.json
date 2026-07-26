@@ -4,7 +4,7 @@
 	"compatibility_flags": ["nodejs_compat"],
 	"main": "src/index.ts",
 	"triggers": {
-		"crons": ["0 13 * * 2"]
+		"crons": ["0 13 * * 1"]
 	},
 	"d1_databases": [
 		{
