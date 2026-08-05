@@ -2,6 +2,7 @@
 title: "The AI Workflow Series Part 6 — Drafting Without Starting Over"
 description: "The first draft is no longer where the work begins. It's where thinking that already happened finally becomes visible."
 pubDate: "Aug 10 2026"
+heroImage: "/blog/ai-workflow-series-part-6-draft.jpg"
 series: "AI-First Mindset"
 ---
 
