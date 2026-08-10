@@ -11,10 +11,11 @@ interface Env {
 export default {
 	// Cron trigger: every Monday at 8:00am EST (13:00 UTC)
 	async scheduled(_event: ScheduledEvent, env: Env, ctx: ExecutionContext): Promise<void> {
-		ctx.waitUntil(sendNewsletter(env));
+		ctx.waitUntil(sendNewsletter(env, false));
 	},
 
 	// HTTP handler for manual trigger (POST /trigger with Authorization header)
+	// Add ?force=true to bypass the duplicate-send check
 	async fetch(request: Request, env: Env): Promise<Response> {
 		if (request.method !== 'POST') {
 			return new Response('Method not allowed', { status: 405 });
@@ -23,19 +24,20 @@ export default {
 		if (!auth || auth !== `Bearer ${env.RESEND_API_KEY}`) {
 			return new Response('Unauthorized', { status: 401 });
 		}
-		await sendNewsletter(env);
-		return new Response(JSON.stringify({ ok: true }), {
+		const force = new URL(request.url).searchParams.get('force') === 'true';
+		const result = await sendNewsletter(env, force);
+		return new Response(JSON.stringify({ ok: true, result }), {
 			headers: { 'Content-Type': 'application/json' },
 		});
 	},
 };
 
-async function sendNewsletter(env: Env): Promise<void> {
+async function sendNewsletter(env: Env, force = false): Promise<string> {
 	const { subscribers_db: db, RESEND_API_KEY: apiKey } = env;
 
 	if (!apiKey) {
 		console.error('RESEND_API_KEY not configured.');
-		return;
+		return 'error: RESEND_API_KEY not set';
 	}
 
 	const article = {
@@ -48,7 +50,27 @@ async function sendNewsletter(env: Env): Promise<void> {
 
 	if (!article.title || !article.url) {
 		console.error('Article not configured. Set ARTICLE_TITLE and ARTICLE_URL secrets.');
-		return;
+		return 'error: article secrets not configured';
+	}
+
+	// Ensure tracking table exists
+	await db.exec(`CREATE TABLE IF NOT EXISTS newsletter_sent (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		article_url TEXT UNIQUE NOT NULL,
+		sent_at TEXT NOT NULL DEFAULT (datetime('now'))
+	)`);
+
+	// Check if this article has already been sent
+	if (!force) {
+		const already = await db
+			.prepare('SELECT id FROM newsletter_sent WHERE article_url = ?')
+			.bind(article.url)
+			.first<{ id: number }>();
+
+		if (already) {
+			console.log(`Article already sent: ${article.url} — skipping.`);
+			return `skipped: already sent "${article.title}"`;
+		}
 	}
 
 	// Fetch all subscribers
@@ -109,7 +131,17 @@ async function sendNewsletter(env: Env): Promise<void> {
 		await new Promise(r => setTimeout(r, 120));
 	}
 
-	console.log(`Done. Sent: ${sent}, Failed: ${failed}`);
+	// Record this article as sent so the cron won't resend it next week
+	if (sent > 0) {
+		await db
+			.prepare('INSERT OR REPLACE INTO newsletter_sent (article_url) VALUES (?)')
+			.bind(article.url)
+			.run();
+	}
+
+	const summary = `Done. Sent: ${sent}, Failed: ${failed}`;
+	console.log(summary);
+	return summary;
 }
 
 function esc(s: string): string {
