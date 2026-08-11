@@ -1,7 +1,7 @@
 ---
 title: "The AI Workflow Series Part 5 — Don't Ask AI to Write. Ask It to Think First."
 description: "AI doesn't replace thinking. It rewards it. The biggest opportunity most people miss with AI isn't faster writing — it's better thinking before a single word is drafted."
-pubDate: "Jul 27 2026"
+pubDate: "Aug 05 2026"
 heroImage: "/blog/ai-workflow-series-part-5-plan.jpg"
 series: "AI-First Mindset"
 ---
