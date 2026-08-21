@@ -38,9 +38,10 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
 	// Insert into D1
 	try {
+		const token = crypto.randomUUID();
 		await db
-			.prepare('INSERT INTO subscribers (email) VALUES (?)')
-			.bind(email)
+			.prepare('INSERT INTO subscribers (email, unsubscribe_token) VALUES (?, ?)')
+			.bind(email, token)
 			.run();
 
 		return new Response(JSON.stringify({ success: true }), {
