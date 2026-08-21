@@ -53,10 +53,17 @@ async function sendNewsletter(env: Env, force = false): Promise<string> {
 		return 'error: article secrets not configured';
 	}
 
-	// Ensure tracking table exists
+	// Ensure tracking tables exist
 	await db.exec(`CREATE TABLE IF NOT EXISTS newsletter_sent (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		article_url TEXT UNIQUE NOT NULL,
+		sent_at TEXT NOT NULL DEFAULT (datetime('now'))
+	)`);
+	await db.exec(`CREATE TABLE IF NOT EXISTS send_log (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		email TEXT NOT NULL,
+		article_url TEXT NOT NULL,
+		status TEXT NOT NULL,
 		sent_at TEXT NOT NULL DEFAULT (datetime('now'))
 	)`);
 
@@ -86,6 +93,8 @@ async function sendNewsletter(env: Env, force = false): Promise<string> {
 	console.log(`Sending newsletter to ${results.length} subscribers…`);
 	let sent = 0;
 	let failed = 0;
+	const delivered: string[] = [];
+	const failedList: string[] = [];
 
 	for (const row of results) {
 		// Assign unsubscribe token on first send if missing
@@ -118,13 +127,29 @@ async function sendNewsletter(env: Env, force = false): Promise<string> {
 
 			if (res.ok) {
 				sent++;
+				delivered.push(row.email);
+				await db
+					.prepare('INSERT INTO send_log (email, article_url, status) VALUES (?, ?, ?)')
+					.bind(row.email, article.url, 'sent')
+					.run();
 			} else {
-				console.error(`Send failed for ${row.email}:`, await res.text());
+				const errText = await res.text();
+				console.error(`Send failed for ${row.email}:`, errText);
 				failed++;
+				failedList.push(row.email);
+				await db
+					.prepare('INSERT INTO send_log (email, article_url, status) VALUES (?, ?, ?)')
+					.bind(row.email, article.url, 'failed')
+					.run();
 			}
 		} catch (err) {
 			console.error(`Error for ${row.email}:`, err);
 			failed++;
+			failedList.push(row.email);
+			await db
+				.prepare('INSERT INTO send_log (email, article_url, status) VALUES (?, ?, ?)')
+				.bind(row.email, article.url, 'error')
+				.run();
 		}
 
 		// Stay within Resend free-tier rate limit (10 req/sec)
@@ -137,6 +162,50 @@ async function sendNewsletter(env: Env, force = false): Promise<string> {
 			.prepare('INSERT OR REPLACE INTO newsletter_sent (article_url) VALUES (?)')
 			.bind(article.url)
 			.run();
+	}
+
+	// Send delivery summary to mcanne98@gmail.com
+	try {
+		const sentAt = new Date().toUTCString();
+		const deliveredRows = delivered.map((e, i) => `<tr style="background:${i % 2 === 0 ? '#f8fafc' : '#ffffff'};"><td style="padding:6px 12px;font-size:13px;color:#0F172A;">${esc(e)}</td><td style="padding:6px 12px;font-size:13px;color:#16a34a;text-align:center;">✓ Sent</td></tr>`).join('');
+		const failedRows = failedList.map((e, i) => `<tr style="background:${i % 2 === 0 ? '#fef2f2' : '#ffffff'};"><td style="padding:6px 12px;font-size:13px;color:#0F172A;">${esc(e)}</td><td style="padding:6px 12px;font-size:13px;color:#dc2626;text-align:center;">✗ Failed</td></tr>`).join('');
+
+		const summaryHtml = `<!doctype html><html><body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f1f5f9;margin:0;padding:24px;">
+<div style="max-width:560px;margin:0 auto;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.1);">
+<div style="background:#0F172A;padding:20px 28px;">
+  <p style="margin:0;font-size:15px;font-weight:600;color:#ffffff;">Newsletter Delivery Summary</p>
+  <p style="margin:4px 0 0;font-size:12px;color:#14B8A6;">AI, Myself &amp; I · ${sentAt}</p>
+</div>
+<div style="padding:24px 28px;">
+  <p style="margin:0 0 8px;font-size:14px;color:#475569;"><strong>Article:</strong> ${esc(article.title)}</p>
+  <p style="margin:0 0 8px;font-size:14px;color:#475569;"><strong>URL:</strong> <a href="${article.url}" style="color:#14B8A6;">${article.url}</a></p>
+  <p style="margin:0 0 20px;font-size:14px;color:#475569;"><strong>Total:</strong> ${results.length} subscribers &nbsp;|&nbsp; <span style="color:#16a34a;">${sent} sent</span>${failed > 0 ? ` &nbsp;|&nbsp; <span style="color:#dc2626;">${failed} failed</span>` : ''}</p>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;border:1px solid #e2e8f0;border-radius:8px;overflow:hidden;">
+    <thead><tr style="background:#0F172A;"><th style="padding:8px 12px;font-size:12px;color:#94A3B8;text-align:left;font-weight:500;">Subscriber</th><th style="padding:8px 12px;font-size:12px;color:#94A3B8;text-align:center;font-weight:500;">Status</th></tr></thead>
+    <tbody>${deliveredRows}${failedRows}</tbody>
+  </table>
+</div>
+</div>
+</body></html>`;
+
+		const summaryText = `Newsletter Delivery Summary\n${sentAt}\n\nArticle: ${article.title}\nURL: ${article.url}\nTotal: ${results.length} | Sent: ${sent} | Failed: ${failed}\n\nDelivered to:\n${delivered.map(e => `  ✓ ${e}`).join('\n')}${failedList.length > 0 ? `\n\nFailed:\n${failedList.map(e => `  ✗ ${e}`).join('\n')}` : ''}`;
+
+		await fetch('https://api.resend.com/emails', {
+			method: 'POST',
+			headers: {
+				Authorization: `Bearer ${apiKey}`,
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				from: 'Cedric Anne <blog@cedricanne.com>',
+				to: 'mcanne98@gmail.com',
+				subject: `[Newsletter Summary] ${article.title} — ${sent}/${results.length} delivered`,
+				html: summaryHtml,
+				text: summaryText,
+			}),
+		});
+	} catch (err) {
+		console.error('Failed to send delivery summary:', err);
 	}
 
 	const summary = `Done. Sent: ${sent}, Failed: ${failed}`;
