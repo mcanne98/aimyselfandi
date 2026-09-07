@@ -54,18 +54,8 @@ async function sendNewsletter(env: Env, force = false): Promise<string> {
 	}
 
 	// Ensure tracking tables exist
-	await db.exec(`CREATE TABLE IF NOT EXISTS newsletter_sent (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		article_url TEXT UNIQUE NOT NULL,
-		sent_at TEXT NOT NULL DEFAULT (datetime('now'))
-	)`);
-	await db.exec(`CREATE TABLE IF NOT EXISTS send_log (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		email TEXT NOT NULL,
-		article_url TEXT NOT NULL,
-		status TEXT NOT NULL,
-		sent_at TEXT NOT NULL DEFAULT (datetime('now'))
-	)`);
+	await db.exec("CREATE TABLE IF NOT EXISTS newsletter_sent (id INTEGER PRIMARY KEY AUTOINCREMENT, article_url TEXT UNIQUE NOT NULL, sent_at TEXT NOT NULL DEFAULT (datetime('now')))");
+	await db.exec("CREATE TABLE IF NOT EXISTS send_log (id INTEGER PRIMARY KEY AUTOINCREMENT, email TEXT NOT NULL, article_url TEXT NOT NULL, status TEXT NOT NULL, sent_at TEXT NOT NULL DEFAULT (datetime('now')))");
 
 	// Check if this article has already been sent
 	if (!force) {
