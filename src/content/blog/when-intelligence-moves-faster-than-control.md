@@ -97,3 +97,7 @@ That is why I do not read We Must Pace the Frontier simply as an argument about 
 The next chapter of AI leadership therefore cannot only be about building more capability. It must be about building the organizational capacity to handle that capability.
 Because the defining question of the next phase of AI may no longer be how intelligent can these systems become?
 It may be how much intelligence are we prepared to responsibly put to work?
+
+---
+
+*This article was informed by Dario Amodei's essay [We Must Pace the Frontier](https://darioamodei.com/post/we-must-pace-the-frontier).*
