@@ -1,12 +1,20 @@
 interface Env {
 	subscribers_db: D1Database;
 	RESEND_API_KEY: string;
-	ARTICLE_TITLE: string;
-	ARTICLE_DESCRIPTION: string;
-	ARTICLE_URL: string;
-	ARTICLE_HERO?: string;
-	ARTICLE_SERIES?: string;
+	TRIGGER_SECRET: string;
 }
+
+interface LatestPost {
+	slug: string;
+	title: string;
+	description: string;
+	url: string;
+	heroImage?: string;
+	series?: string;
+	pubDate: string;
+}
+
+const LATEST_POST_URL = 'https://blog.cedricanne.com/api/latest-post.json';
 
 export default {
 	// Cron trigger: every Monday at 8:00am EST (13:00 UTC)
@@ -20,8 +28,11 @@ export default {
 		if (request.method !== 'POST') {
 			return new Response('Method not allowed', { status: 405 });
 		}
+		if (!env.TRIGGER_SECRET) {
+			return new Response('TRIGGER_SECRET not configured.', { status: 500 });
+		}
 		const auth = request.headers.get('Authorization');
-		if (!auth || auth !== `Bearer ${env.RESEND_API_KEY}`) {
+		if (!auth || auth !== `Bearer ${env.TRIGGER_SECRET}`) {
 			return new Response('Unauthorized', { status: 401 });
 		}
 		const force = new URL(request.url).searchParams.get('force') === 'true';
@@ -32,6 +43,19 @@ export default {
 	},
 };
 
+async function fetchLatestPost(): Promise<LatestPost | null> {
+	try {
+		const res = await fetch(LATEST_POST_URL);
+		if (!res.ok) return null;
+		const data = (await res.json()) as LatestPost;
+		if (!data.slug || !data.title || !data.url) return null;
+		return data;
+	} catch (err) {
+		console.error('Error fetching latest post:', err);
+		return null;
+	}
+}
+
 async function sendNewsletter(env: Env, force = false): Promise<string> {
 	const { subscribers_db: db, RESEND_API_KEY: apiKey } = env;
 
@@ -40,17 +64,10 @@ async function sendNewsletter(env: Env, force = false): Promise<string> {
 		return 'error: RESEND_API_KEY not set';
 	}
 
-	const article = {
-		title: env.ARTICLE_TITLE ?? '',
-		description: env.ARTICLE_DESCRIPTION ?? '',
-		url: env.ARTICLE_URL ?? '',
-		heroImage: env.ARTICLE_HERO,
-		series: env.ARTICLE_SERIES,
-	};
-
-	if (!article.title || !article.url) {
-		console.error('Article not configured. Set ARTICLE_TITLE and ARTICLE_URL secrets.');
-		return 'error: article secrets not configured';
+	const article = await fetchLatestPost();
+	if (!article) {
+		console.error('Could not fetch the latest post from the blog.');
+		return 'error: could not fetch the latest post';
 	}
 
 	// Ensure tracking tables exist
@@ -77,7 +94,7 @@ async function sendNewsletter(env: Env, force = false): Promise<string> {
 
 	if (!results?.length) {
 		console.log('No subscribers.');
-		return;
+		return 'no subscribers';
 	}
 
 	console.log(`Sending newsletter to ${results.length} subscribers…`);
