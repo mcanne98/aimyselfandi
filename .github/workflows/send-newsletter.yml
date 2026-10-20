@@ -1,0 +1,19 @@
+name: Send Newsletter
+
+on:
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Resend even if this post already went out"
+        type: boolean
+        default: false
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger newsletter worker
+        run: |
+          curl -sS -X POST "${{ secrets.NEWSLETTER_TRIGGER_URL }}${{ github.event.inputs.force == 'true' && '?force=true' || '' }}" \
+            -H "Authorization: Bearer ${{ secrets.NEWSLETTER_TRIGGER_SECRET }}" \
+            --fail
